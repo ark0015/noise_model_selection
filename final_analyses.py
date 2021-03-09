@@ -4,7 +4,7 @@
 # # Final Noise Analyses and Factorized Likelihood Run
 
 import numpy as np
-import glob, os, json, string, pickle
+import glob, os, sys, json, string, pickle
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging, inspect, copy
@@ -168,5 +168,5 @@ with open(sampler.outDir+'/model_kwargs.json' , 'w') as fout:
 N = 1000000
 x0 = np.hstack(p.sample() for p in pta_fL.params)
 Sampler.sample(x0,N, SCAMweight=30, AMweight=15,
-               DEweight=30, burn=10000)
+               DEweight=30, burn=10000,writeHotChains=writeHotChains,hotChain=False,)
 
