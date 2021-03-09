@@ -4,7 +4,11 @@
 # # Noise model selection on NANOGrav pulsars
 
 import numpy as np
+<<<<<<< HEAD
 import glob, os, sys, json, string, pickle
+=======
+import glob, os, json, string, pickle
+>>>>>>> origin/ark-B1855+09
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging, inspect, copy
@@ -25,6 +29,7 @@ top_path_idx = splt_path.index("ark0015")
 top_dir = "/".join(splt_path[0 : top_path_idx + 1])
 e_e_path = top_dir + "/enterprise_extensions/"
 sys.path.insert(0, e_e_path)
+
 
 import enterprise_extensions
 from enterprise_extensions import models, model_utils, blocks
@@ -119,6 +124,13 @@ chrom_gp = True
 chrom_gp_kernel = 'nondiag'
 chrom_kernel= 'periodic'
 chrom_index = 4.
+"""
+dm_annual = False
+chrom_gp = True
+chrom_gp_kernel = 'nondiag'
+chrom_kernel= 'periodic'
+chrom_indices = [4.,4.4]
+"""
 white_vary = True
 
 
@@ -142,6 +154,7 @@ print(model_template)
 # Create list of pta models for our model selection
 # nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 nmodels = 3
+#nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 mod_index = np.arange(nmodels)
 
 ptas = dict.fromkeys(mod_index)
@@ -150,6 +163,7 @@ model_labels = []
 ct = 0
 for dm in dm_nondiag_kernel:
     for dm_annual in dm_annuals:
+    #for chrom_index in chrom_indices:
         if dm == 'None':
             dm_var = False
         else:
@@ -184,6 +198,17 @@ for dm in dm_nondiag_kernel:
 
 # In[ ]:
 print(kwargs)
+"""
+        # Instantiate single pulsar noise model
+        ptas[ct] = model_singlepsr_noise(psr, **kwargs)
+
+        # Add labels and kwargs to save for posterity and plotting.
+        model_labels.append([string.ascii_uppercase[ct],dm, chrom_kernel])
+        model_dict.update({str(ct):kwargs})
+        ct += 1
+"""
+
+# In[ ]:
 
 # Instantiate a collection of models
 super_model = HyperModel(ptas)
@@ -214,6 +239,14 @@ print('Will Save to: ',outdir)
 #emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
 emp_distr_path = './distr_round_6_model_C.pkl'
 print("Empirical Distribution?",os.path.isfile(emp_distr_path))
+"""
+round_number = f'6_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_rfband_vs_sq_exp_rfband_dm_nondiag_k_and_indx_4_vs_4pt4_periodic_chrom'
+print(round_number)
+print(s)
+outdir = './chains/{}/round_{}'.format(psr.name,round_number)
+print('Will Save to: ',outdir)
+emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
+"""
 sampler = super_model.setup_sampler(resume=True, outdir=outdir,
                                     empirical_distr=emp_distr_path)
 
@@ -244,7 +277,6 @@ with open(outdir+'/model_labels.json' , 'w') as fout:
 
 # In[ ]:
 
-print(s)
 # sampler for N steps
 N = int(1e7)
 x0 = super_model.initial_sample()
