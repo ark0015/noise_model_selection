@@ -4,11 +4,7 @@
 # # Noise model selection on NANOGrav pulsars
 
 import numpy as np
-<<<<<<< HEAD
 import glob, os, sys, json, string, pickle
-=======
-import glob, os, json, string, pickle
->>>>>>> origin/ark-B1855+09
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging, inspect, copy
