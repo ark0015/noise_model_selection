@@ -55,7 +55,6 @@ with open(filepath,'rb') as fin:
 
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
-print(round_number)
 model_kwargs_path = f'./chains/{psrname}/round_8_spectrum_psd_nondiag_chrom_gp_k_periodic_chrom_k_True_chrom_gp_sq_exp_rfband_dm_nondiag_k_free_spectrum_run/model_kwargs.json'
 
 with open(model_kwargs_path, 'r') as fin:
@@ -167,6 +166,6 @@ with open(sampler.outDir+'/model_kwargs.json' , 'w') as fout:
 
 N = 1000000
 x0 = np.hstack(p.sample() for p in pta_fL.params)
-Sampler.sample(x0,N, SCAMweight=30, AMweight=15,
+sampler.sample(x0,N, SCAMweight=30, AMweight=15,
                DEweight=30, burn=10000,writeHotChains=writeHotChains,hotChain=False,)
 
