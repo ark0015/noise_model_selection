@@ -4,7 +4,7 @@
 # # Final Noise Analyses and Factorized Likelihood Run
 
 import numpy as np
-import glob, os, json, string, pickle
+import glob, os, sys, json, string, pickle
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging, inspect, copy
@@ -55,7 +55,6 @@ with open(filepath,'rb') as fin:
 
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
-print(round_number)
 model_kwargs_path = f'./chains/{psrname}/round_8_spectrum_psd_nondiag_chrom_gp_k_periodic_chrom_k_True_chrom_gp_sq_exp_rfband_dm_nondiag_k_free_spectrum_run/model_kwargs.json'
 
 with open(model_kwargs_path, 'r') as fin:
@@ -65,9 +64,9 @@ with open(model_kwargs_path, 'r') as fin:
 
 # In[9]:
 
-
+"""
 #Here I'm assumed that the model we want is the third one.
-fs_kwargs = copy.deepcopy(model_kwargs['3'])
+fs_kwargs = copy.deepcopy(model_kwargs)
 fs_kwargs.update({'psd':'spectrum'})
 
 
@@ -75,7 +74,7 @@ fs_kwargs.update({'psd':'spectrum'})
 
 
 pta = model_singlepsr_noise(psr, **fs_kwargs)
-
+"""
 
 # ### NOTE: Should use an empirical distribution made from a prior run of this model!!!
 
@@ -86,8 +85,8 @@ pta = model_singlepsr_noise(psr, **fs_kwargs)
 emp_dist_path = './twoD_distr_round_6_model_C.pkl'
 print("Empirical Distribution?",os.path.isfile(emp_dist_path))
 
-outdir = f'./chains/{psrname}/free_spec_run/'
-
+outdir = f'./chains/{psrname}/factorized_like_run/'
+"""
 sampler = setup_sampler(pta, outdir=outdir,
                         empirical_distr=emp_dist_path)
 
@@ -116,7 +115,7 @@ x0 = np.hstack(p.sample() for p in pta_crn.params)
 Sampler.sample(x0, , SCAMweight=30, AMweight=15,
                DEweight=30, burn=10000)
 
-
+"""
 # ## Factorized Likelihood Run 
 
 # Here we substitute in the kwargs needed for a factorized likelihood analysis. Notice that the time span used here is the time span of the full data set. This ensures that the frequencies used in the red noise model and the "GWB" model are the same. The number of components is set to 5 to replicate the factorized likelihood runs from the 12.5 year analysis. 
@@ -124,13 +123,13 @@ Sampler.sample(x0, , SCAMweight=30, AMweight=15,
 # In[14]:
 
 
-fLike_kwargs = copy.deepcopy(model_kwargs['3'])
+fLike_kwargs = copy.deepcopy(model_kwargs)
 Tspan = 407576851.48121357
 print(Tspan/(365.25*24*3600),' yrs')
 fLike_kwargs.update({'factorized_like':True,
                      'Tspan':Tspan,
                      'fact_like_gamma':13./3,
-                     'gw_components':5})
+                     'gw_components':5,'psd':'powerlaw'})
 
 
 # In[15]:
@@ -142,7 +141,7 @@ pta_fL = model_singlepsr_noise(psr, **fLike_kwargs)
 # In[22]:
 
 
-sampler = setup_sampler(pta, 
+sampler = setup_sampler(pta_fL, 
                         outdir=outdir,
                         empirical_distr=emp_dist_path)
 
@@ -166,7 +165,7 @@ with open(sampler.outDir+'/model_kwargs.json' , 'w') as fout:
 
 
 N = 1000000
-x0 = np.hstack(p.sample() for p in pta_crn.params)
-Sampler.sample(x0,N, SCAMweight=30, AMweight=15,
-               DEweight=30, burn=10000)
+x0 = np.hstack(p.sample() for p in pta_fL.params)
+sampler.sample(x0,N, SCAMweight=30, AMweight=15,
+               DEweight=30, burn=10000,writeHotChains=writeHotChains,hotChain=False,)
 
