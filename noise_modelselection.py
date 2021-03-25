@@ -58,7 +58,7 @@ from enterprise_extensions.hypermodel import HyperModel
 # In[ ]:
 
 
-psrname = 'B1855+09'#'J1911+1347'
+psrname = 'J2043+1711'#'B1855+09'#'J1911+1347'
 filepath = './no_dmx_pickles/'
 filepath += '{0}_ng12p5yr_v3_nodmx_ePSR.pkl'.format(psrname)
 with open(filepath,'rb') as fin:
@@ -113,10 +113,10 @@ with open(filepath,'rb') as fin:
 
 
 red_psd = 'powerlaw'
-dm_nondiag_kernel = ['periodic_rfband','sq_exp_rfband']#,'sq_exp', 'periodic']
+dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']#,'sq_exp', 'periodic']
 dm_sw_gp = False
 dm_annuals = [True,False]
-chrom_gp = True
+chrom_gp = False
 chrom_gp_kernel = 'nondiag'
 chrom_kernel= 'periodic'
 chrom_index = 4.
@@ -148,8 +148,8 @@ print(model_template)
 
 
 # Create list of pta models for our model selection
-# nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
-nmodels = 3
+nmodels = len(dm_annuals) * len(dm_nondiag_kernel)
+#nmodels = 3
 #nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 mod_index = np.arange(nmodels)
 
@@ -181,19 +181,16 @@ for dm in dm_nondiag_kernel:
                        'chrom_gp':chrom_gp,
                        'chrom_idx':chrom_index})
 
-        if dm == 'periodic_rfband' and dm_annual:
-          pass
-        else:
-          # Instantiate single pulsar noise model
-          ptas[ct] = model_singlepsr_noise(psr, **kwargs)
-          # Add labels and kwargs to save for posterity and plotting.
-          model_labels.append([string.ascii_uppercase[ct],dm, chrom_index])
-          model_dict.update({str(ct):kwargs})
-          ct += 1
+        # Instantiate single pulsar noise model
+        ptas[ct] = model_singlepsr_noise(psr, **kwargs)
+        # Add labels and kwargs to save for posterity and plotting.
+        model_labels.append([string.ascii_uppercase[ct],dm, dm_annual])
+        model_dict.update({str(ct):kwargs})
+        ct += 1
 
 
 # In[ ]:
-print(kwargs)
+print(model_dict)
 """
         # Instantiate single pulsar noise model
         ptas[ct] = model_singlepsr_noise(psr, **kwargs)
@@ -224,16 +221,15 @@ print(model_labels)
 
 # ## Set the out directory for you chains and other sampler setup
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
-
 # In[ ]:
-round_number = f'7_2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_rfband_vs_sq_exp_rfband_dm_nondiag_k_plus_dm_annual'
+round_number = f'1_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_vs_sq_exp_vs_peri_rfband_vs_sq_exp_rfband_dm_nondiag_k_vs_dm_annual'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
 outdir = './chains/{}/round_{}'.format(psr.name,round_number)
 print('Will Save to: ',outdir)
-#emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
-emp_distr_path = './distr_round_6_model_C.pkl'
+emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
+#emp_distr_path = './distr_round_6_model_C.pkl'
 print("Empirical Distribution?",os.path.isfile(emp_distr_path))
 """
 round_number = f'6_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_rfband_vs_sq_exp_rfband_dm_nondiag_k_and_indx_4_vs_4pt4_periodic_chrom'
