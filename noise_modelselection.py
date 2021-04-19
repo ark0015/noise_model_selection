@@ -155,7 +155,7 @@ model_template = dict(zip(keys,vals))
 
 # Create list of pta models for our model selection
 #nmodels = len(dm_annuals) * len(dm_nondiag_kernel)
-nmodels = 6
+nmodels = 4
 #nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 mod_index = np.arange(nmodels)
 
@@ -253,7 +253,7 @@ super_model.params
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
 # In[ ]:
 #round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_vs_sq_exp_vs_dm_nondiag_k'
-#round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vsperi_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
+#round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vs_peri_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
 round_number = f'3_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_peri_chrom_gp_periodic_dm_nondiag_k_0_1_2_cusps'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
