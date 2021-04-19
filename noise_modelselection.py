@@ -114,13 +114,18 @@ with open(filepath,'rb') as fin:
 
 red_psd = 'powerlaw'
 #dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']
-dm_nondiag_kernel = ['sq_exp', 'periodic']
+#dm_nondiag_kernel = ['sq_exp', 'periodic']
+dm_nondiag_kernel = 'periodic'
 dm_sw_gp = False
 dm_annual = False
-chrom_gps = [True,False]
+#chrom_gps = [True,False]
+chrom_gp = False
 chrom_gp_kernel = 'nondiag'
-chrom_kernels = ['periodic','sq_exp']
+#chrom_kernels = ['periodic','sq_exp']
+chrom_kernel = 'periodic'
 chrom_index = 4.
+dm_cusp = [True,False]
+cusps = [0,1,2]
 """
 dm_annual = False
 chrom_gp = True
@@ -159,8 +164,10 @@ model_dict = {}
 model_labels = []
 ct = 0
 for dm in dm_nondiag_kernel:
-  for chrom_gp in chrom_gps:
-    for chrom_kernel in chrom_kernels:
+  #for chrom_gp in chrom_gps:
+  #for chrom_kernel in chrom_kernels:
+  for add_cusp in dm_cusp:
+    for num_cusp in cusps:
       if dm == 'None':
           dm_var = False
       else:
@@ -180,15 +187,19 @@ for dm in dm_nondiag_kernel:
                      'chrom_gp_kernel':chrom_gp_kernel,
                      'chrom_kernel':chrom_kernel,
                      'chrom_gp':chrom_gp,
-                     'chrom_idx':chrom_index})
+                     'chrom_idx':chrom_index,
+                     'dm_cusp':add_cusp,
+                     'num_dm_cusps':num_cusp})
 
-      if not chrom_gp and chrom_kernel == 'sq_exp':
+      #if not chrom_gp and chrom_kernel == 'sq_exp':
+      #  pass
+      if not add_cusp and num_cusp !=0:
         pass
       else:
         # Instantiate single pulsar noise model
         ptas[ct] = model_singlepsr_noise(psr, **kwargs)
         # Add labels and kwargs to save for posterity and plotting.
-        model_labels.append([string.ascii_uppercase[ct],dm, chrom_gp,chrom_kernel])
+        model_labels.append([string.ascii_uppercase[ct],dm, add_cusp,num_cusp])
         model_dict.update({str(ct):kwargs})
         ct += 1
 
@@ -242,7 +253,8 @@ super_model.params
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
 # In[ ]:
 #round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_vs_sq_exp_vs_dm_nondiag_k'
-round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vs peri_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
+#round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vsperi_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
+round_number = f'3_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_peri_chrom_gp_periodic_dm_nondiag_k_0_1_2_cusps'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
