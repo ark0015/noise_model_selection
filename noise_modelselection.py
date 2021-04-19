@@ -189,7 +189,8 @@ for dm in dm_nondiag_kernel:
                      'chrom_gp':chrom_gp,
                      'chrom_idx':chrom_index,
                      'dm_cusp':add_cusp,
-                     'num_dm_cusps':num_cusp})
+                     'num_dm_cusps':num_cusp,
+                     'dm_cusp_sign':np.repeat('vary',num_cusp)})
 
       #if not chrom_gp and chrom_kernel == 'sq_exp':
       #  pass
