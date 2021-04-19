@@ -115,7 +115,7 @@ with open(filepath,'rb') as fin:
 red_psd = 'powerlaw'
 #dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']
 #dm_nondiag_kernel = ['sq_exp', 'periodic']
-dm_nondiag_kernel = 'periodic'
+dm_nondiag_kernel = ['periodic']
 dm_sw_gp = False
 dm_annual = False
 #chrom_gps = [True,False]
