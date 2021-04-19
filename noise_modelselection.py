@@ -125,7 +125,7 @@ chrom_gp_kernel = 'nondiag'
 chrom_kernel = 'periodic'
 chrom_index = 4.
 dm_cusp = [True,False]
-cusps = [0,1,2]
+cusps = [1,2]
 """
 dm_annual = False
 chrom_gp = True
@@ -155,7 +155,7 @@ model_template = dict(zip(keys,vals))
 
 # Create list of pta models for our model selection
 #nmodels = len(dm_annuals) * len(dm_nondiag_kernel)
-nmodels = 4
+nmodels = 3
 #nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 mod_index = np.arange(nmodels)
 
@@ -193,7 +193,7 @@ for dm in dm_nondiag_kernel:
 
       #if not chrom_gp and chrom_kernel == 'sq_exp':
       #  pass
-      if not add_cusp and num_cusp !=0:
+      if not add_cusp and num_cusp != 1:
         pass
       else:
         # Instantiate single pulsar noise model
@@ -202,6 +202,7 @@ for dm in dm_nondiag_kernel:
         model_labels.append([string.ascii_uppercase[ct],dm, add_cusp,num_cusp])
         model_dict.update({str(ct):kwargs})
         ct += 1
+
 
 
 # In[ ]:
