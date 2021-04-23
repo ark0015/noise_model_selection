@@ -13,7 +13,6 @@ logging.basicConfig(level=logging.WARNING)
 import enterprise
 from enterprise.pulsar import Pulsar
 
-
 current_path = os.getcwd()
 splt_path = current_path.split("/")
 # top_path_idx = splt_path.index("nanograv")
@@ -38,7 +37,7 @@ from enterprise_extensions.sampler import setup_sampler
 # In[4]:
 
 
-psrname = 'B1855+09'#'J1911+1347'
+psrname = 'J2043+1711'#'B1855+09'#'J1911+1347'
 filepath = './no_dmx_pickles/'
 filepath += '{0}_ng12p5yr_v3_nodmx_ePSR.pkl'.format(psrname)
 with open(filepath,'rb') as fin:
@@ -55,7 +54,7 @@ with open(filepath,'rb') as fin:
 
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
-model_kwargs_path = f'./chains/{psrname}/round_8_spectrum_psd_nondiag_chrom_gp_k_periodic_chrom_k_True_chrom_gp_sq_exp_rfband_dm_nondiag_k_free_spectrum_run/model_kwargs.json'
+model_kwargs_path = f'./chains/{psrname}/free_spectrum_run_model_B_round_3_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_cusps/model_kwargs.json'
 
 with open(model_kwargs_path, 'r') as fin:
     model_kwargs = json.load(fin)
@@ -82,10 +81,12 @@ pta = model_singlepsr_noise(psr, **fs_kwargs)
 
 
 #emp_dist_path = './wn_emp_dists/J1911+1347_ng12p5yr_v3_std_plaw_emp_dist.pkl'
-emp_dist_path = './twoD_distr_round_6_model_C.pkl'
+#emp_dist_path = './twoD_distr_round_6_model_C.pkl'
+emp_dist_path = f'./{psrname}_twoD_distr_round_3_model_B.pkl'
+
 print("Empirical Distribution?",os.path.isfile(emp_dist_path))
 
-outdir = f'./chains/{psrname}/factorized_like_run/'
+outdir = f'./chains/{psrname}/{psrname}_factorized_like_run/'
 """
 sampler = setup_sampler(pta, outdir=outdir,
                         empirical_distr=emp_dist_path)
