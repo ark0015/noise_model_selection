@@ -190,7 +190,7 @@ for dm in dm_nondiag_kernel:
                      'chrom_gp':chrom_gp,
                      'chrom_idx':chrom_index,
                      'dm_cusp':dm_cusp,
-                     'dm_cusp_idx':[cusp_idx_1,cusp_idx_2]
+                     'dm_cusp_idx':[cusp_idx_1,cusp_idx_2],
                      'num_dm_cusps':num_cusp,
                      'dm_cusp_sign':list(np.repeat(cusp_sign,num_cusp))})
 
