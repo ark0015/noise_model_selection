@@ -58,7 +58,7 @@ from enterprise_extensions.hypermodel import HyperModel
 # In[ ]:
 
 
-psrname = 'B1855+09'#'J1911+1347'
+psrname = 'J2043+1711'#'B1855+09'#'J1911+1347'
 filepath = './no_dmx_pickles/'
 filepath += '{0}_ng12p5yr_v3_nodmx_ePSR.pkl'.format(psrname)
 with open(filepath,'rb') as fin:
@@ -113,13 +113,19 @@ with open(filepath,'rb') as fin:
 
 
 red_psd = 'powerlaw'
-dm_nondiag_kernel = ['periodic_rfband','sq_exp_rfband']#,'sq_exp', 'periodic']
+#dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']
+#dm_nondiag_kernel = ['sq_exp', 'periodic']
+dm_nondiag_kernel = ['periodic']
 dm_sw_gp = False
-dm_annuals = [True,False]
-chrom_gp = True
+dm_annual = False
+#chrom_gps = [True,False]
+chrom_gp = False
 chrom_gp_kernel = 'nondiag'
-chrom_kernel= 'periodic'
+#chrom_kernels = ['periodic','sq_exp']
+chrom_kernel = 'periodic'
 chrom_index = 4.
+dm_cusp = [True,False]
+cusps = [1,2]
 """
 dm_annual = False
 chrom_gp = True
@@ -139,7 +145,7 @@ args = inspect.getfullargspec(model_singlepsr_noise)
 keys = args[0][1:]
 vals = args[3]
 model_template = dict(zip(keys,vals))
-print(model_template)
+#print(model_template)
 
 
 # Here we show one work flow where we set up a `for` loop to go through the various models. Make sure to save the `model_labels` and `model_kwargs`. The former will be useful for making noise flower plots, while the latter will be the final product for a pulsar in this analysis.
@@ -148,7 +154,7 @@ print(model_template)
 
 
 # Create list of pta models for our model selection
-# nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
+#nmodels = len(dm_annuals) * len(dm_nondiag_kernel)
 nmodels = 3
 #nmodels = len(chrom_indices) * len(dm_nondiag_kernel)
 mod_index = np.arange(nmodels)
@@ -158,42 +164,69 @@ model_dict = {}
 model_labels = []
 ct = 0
 for dm in dm_nondiag_kernel:
-    for dm_annual in dm_annuals:
-    #for chrom_index in chrom_indices:
-        if dm == 'None':
-            dm_var = False
-        else:
-            dm_var = True
-        # Copy template kwargs dict and replace values we are changing. 
-        kwargs = copy.deepcopy(model_template)
+  #for chrom_gp in chrom_gps:
+  #for chrom_kernel in chrom_kernels:
+  for add_cusp in dm_cusp:
+    for num_cusp in cusps:
+      if dm == 'None':
+          dm_var = False
+      else:
+          dm_var = True
+      # Copy template kwargs dict and replace values we are changing. 
+      kwargs = copy.deepcopy(model_template)
 
-        kwargs.update({'dm_var':dm_var,
-                       'dmgp_kernel':'nondiag',
-                       'psd':red_psd,
-                       'white_vary':white_vary,
-                       'dm_nondiag_kernel':dm,
-                       'dm_sw_deter':True,
-                       'dm_sw_gp':dm_sw_gp,
-                       'dm_annual': dm_annual,
-                       'swgp_basis': 'powerlaw',
-                       'chrom_gp_kernel':chrom_gp_kernel,
-                       'chrom_kernel':chrom_kernel,
-                       'chrom_gp':chrom_gp,
-                       'chrom_idx':chrom_index})
+      kwargs.update({'dm_var':dm_var,
+                     'dmgp_kernel':'nondiag',
+                     'psd':red_psd,
+                     'white_vary':white_vary,
+                     'dm_nondiag_kernel':dm,
+                     'dm_sw_deter':True,
+                     'dm_sw_gp':dm_sw_gp,
+                     'dm_annual': dm_annual,
+                     'swgp_basis': 'powerlaw',
+                     'chrom_gp_kernel':chrom_gp_kernel,
+                     'chrom_kernel':chrom_kernel,
+                     'chrom_gp':chrom_gp,
+                     'chrom_idx':chrom_index,
+                     'dm_cusp':add_cusp,
+                     'num_dm_cusps':num_cusp,
+                     'dm_cusp_sign':list(np.repeat('vary',num_cusp))})
 
-        if dm == 'periodic_rfband' and dm_annual:
-          pass
-        else:
-          # Instantiate single pulsar noise model
-          ptas[ct] = model_singlepsr_noise(psr, **kwargs)
-          # Add labels and kwargs to save for posterity and plotting.
-          model_labels.append([string.ascii_uppercase[ct],dm, chrom_index])
-          model_dict.update({str(ct):kwargs})
-          ct += 1
+      #if not chrom_gp and chrom_kernel == 'sq_exp':
+      #  pass
+      if not add_cusp and num_cusp != 1:
+        pass
+      else:
+        # Instantiate single pulsar noise model
+        ptas[ct] = model_singlepsr_noise(psr, **kwargs)
+        # Add labels and kwargs to save for posterity and plotting.
+        model_labels.append([string.ascii_uppercase[ct],dm, add_cusp,num_cusp])
+        model_dict.update({str(ct):kwargs})
+        ct += 1
+
 
 
 # In[ ]:
-print(kwargs)
+#print(model_dict)
+changed_params_list = []
+for j,key in enumerate(model_dict['0'].keys()):
+    #print(key)
+    #print('\t model 0',model_dict['0'][key])
+    for other_model in model_dict.keys():
+        if '0' != other_model:
+            #print('\t model',other_model,model_dict[other_model][key])
+            if model_dict[other_model][key] != model_dict['0'][key]:
+                changed_params_list.append(key)
+changed_params = {}
+for model in model_dict.keys():
+    changed_params[model] = {}
+    for param in changed_params_list:
+        changed_params[model][param] = model_dict[model][param]
+print('')
+print(changed_params)
+print('')
+print(model_labels)
+#print(s)
 """
         # Instantiate single pulsar noise model
         ptas[ct] = model_singlepsr_noise(psr, **kwargs)
@@ -218,22 +251,19 @@ super_model.params
 
 # In[ ]:
 
-
-print(model_labels)
-
-
 # ## Set the out directory for you chains and other sampler setup
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
-
 # In[ ]:
-round_number = f'7_2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_rfband_vs_sq_exp_rfband_dm_nondiag_k_plus_dm_annual'
+#round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_vs_sq_exp_vs_dm_nondiag_k'
+#round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vs_peri_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
+round_number = f'3_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_peri_chrom_gp_periodic_dm_nondiag_k_0_1_2_cusps'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
 outdir = './chains/{}/round_{}'.format(psr.name,round_number)
 print('Will Save to: ',outdir)
-#emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
-emp_distr_path = './distr_round_6_model_C.pkl'
+emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
+#emp_distr_path = './distr_round_6_model_C.pkl'
 print("Empirical Distribution?",os.path.isfile(emp_distr_path))
 """
 round_number = f'6_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_rfband_vs_sq_exp_rfband_dm_nondiag_k_and_indx_4_vs_4pt4_periodic_chrom'
@@ -274,7 +304,7 @@ with open(outdir+'/model_labels.json' , 'w') as fout:
 # In[ ]:
 
 # sampler for N steps
-N = int(1e7)
+N = int(5e6)
 x0 = super_model.initial_sample()
 
 
