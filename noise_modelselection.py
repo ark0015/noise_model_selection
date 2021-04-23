@@ -121,7 +121,10 @@ chrom_gp_kernel = 'nondiag'
 chrom_kernel = 'periodic'
 chrom_index = 4.
 dm_cusp = True
-cusps = [2,3,4]
+#cusps = [2,3,4]
+num_cusp = 2
+cusp_idxs = [2.,4.]
+cusp_sign = 'positive'
 """
 dm_annual = False
 chrom_gp = True
@@ -163,42 +166,47 @@ for dm in dm_nondiag_kernel:
   #for chrom_gp in chrom_gps:
   #for chrom_kernel in chrom_kernels:
   #for add_cusp in dm_cusp:
-  for num_cusp in cusps:
-    if dm == 'None':
-        dm_var = False
-    else:
-        dm_var = True
-    # Copy template kwargs dict and replace values we are changing. 
-    kwargs = copy.deepcopy(model_template)
+  #for num_cusp in cusps:
+  for cusp_idx_1 in cusp_idxs:
+    for cusp_idx_2 in cusp_idxs:
+      if dm == 'None':
+          dm_var = False
+      else:
+          dm_var = True
+      # Copy template kwargs dict and replace values we are changing. 
+      kwargs = copy.deepcopy(model_template)
 
-    kwargs.update({'dm_var':dm_var,
-                   'dmgp_kernel':'nondiag',
-                   'psd':red_psd,
-                   'white_vary':white_vary,
-                   'dm_nondiag_kernel':dm,
-                   'dm_sw_deter':True,
-                   'dm_sw_gp':dm_sw_gp,
-                   'dm_annual': dm_annual,
-                   'swgp_basis': 'powerlaw',
-                   'chrom_gp_kernel':chrom_gp_kernel,
-                   'chrom_kernel':chrom_kernel,
-                   'chrom_gp':chrom_gp,
-                   'chrom_idx':chrom_index,
-                   'dm_cusp':dm_cusp,
-                   'num_dm_cusps':num_cusp,
-                   'dm_cusp_sign':list(np.repeat('vary',num_cusp))})
+      kwargs.update({'dm_var':dm_var,
+                     'dmgp_kernel':'nondiag',
+                     'psd':red_psd,
+                     'white_vary':white_vary,
+                     'dm_nondiag_kernel':dm,
+                     'dm_sw_deter':True,
+                     'dm_sw_gp':dm_sw_gp,
+                     'dm_annual': dm_annual,
+                     'swgp_basis': 'powerlaw',
+                     'chrom_gp_kernel':chrom_gp_kernel,
+                     'chrom_kernel':chrom_kernel,
+                     'chrom_gp':chrom_gp,
+                     'chrom_idx':chrom_index,
+                     'dm_cusp':dm_cusp,
+                     'dm_cusp_idx':[cusp_idx_1,cusp_idx_2]
+                     'num_dm_cusps':num_cusp,
+                     'dm_cusp_sign':list(np.repeat(cusp_sign,num_cusp))})
 
-    #if not chrom_gp and chrom_kernel == 'sq_exp':
-    #  pass
-    #if not add_cusp and num_cusp != 1:
-    #  pass
-    #else:
-    # Instantiate single pulsar noise model
-    ptas[ct] = model_singlepsr_noise(psr, **kwargs)
-    # Add labels and kwargs to save for posterity and plotting.
-    model_labels.append([string.ascii_uppercase[ct],dm,num_cusp])
-    model_dict.update({str(ct):kwargs})
-    ct += 1
+      #if not chrom_gp and chrom_kernel == 'sq_exp':
+      #  pass
+      #if not add_cusp and num_cusp != 1:
+      #  pass
+      if cusp_idx_1 == 2. and cusp_idx_2 == 4.:
+        pass
+      else:
+        # Instantiate single pulsar noise model
+        ptas[ct] = model_singlepsr_noise(psr, **kwargs)
+        # Add labels and kwargs to save for posterity and plotting.
+        model_labels.append([string.ascii_uppercase[ct],dm,cusp_idx_1,cusp_idx_2])
+        model_dict.update({str(ct):kwargs})
+        ct += 1 
 
 
 
@@ -252,7 +260,7 @@ super_model.params
 # In[ ]:
 #round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_periodic_vs_sq_exp_vs_dm_nondiag_k'
 #round_number = f'2_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_chrom_k_vs_peri_vs_sqexp_chrom_gp_vs_periodic_vs_sq_exp_dm_nondiag_k'
-round_number = f'4_{red_psd}_psd_no_chrom_gp_periodic_dm_nondiag_k_2_3_4_cusps'
+round_number = f'5_{red_psd}_psd_no_chrom_gp_periodic_dm_nondiag_k_2_positive_cusps_2_vs_4_cusp_idx'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
