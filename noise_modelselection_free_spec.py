@@ -10,10 +10,6 @@ import matplotlib as mpl
 import logging, inspect, copy
 logging.basicConfig(level=logging.WARNING)
 
-
-# In[3]:
-
-
 import enterprise
 from enterprise.pulsar import Pulsar
 
@@ -26,6 +22,7 @@ top_dir = "/".join(splt_path[0 : top_path_idx + 1])
 e_e_path = top_dir + "/enterprise_extensions/"
 sys.path.insert(0, e_e_path)
 
+
 import enterprise_extensions
 from enterprise_extensions import models, model_utils, blocks
 from enterprise_extensions.models import model_singlepsr_noise
@@ -34,32 +31,7 @@ from enterprise_extensions.hypermodel import HyperModel
 from enterprise_extensions import sampler
 
 
-
-# # Red-noise model selection on 12.5yr Dataset
-
-# ## Get par, tim, and noise files
-
-# In[ ]:
-
-
-# psr = Pulsar('./partim_no_noise/J0613-0200_NANOGrav_11yv0.gls.strip.par',
-#              './partim_no_noise/J0613-0200_NANOGrav_11yv0.tim',
-#               ephem='DE436')
-
-# noisefiles = sorted(glob.glob('../11yr_stochastic_analysis/nano11y_data/noisefiles/*.json'))
-
-# params = {}
-# for noisefil in noisefiles:
-#     with open(noisefil, 'r') as fp:
-#         params.update(json.load(fp))
-
-
-# ## Load Pickle File 
-
-# In[ ]:
-
-
-psrname = 'B1855+09'#'J1911+1347'
+psrname = 'J2043+1711'#'B1855+09'#'J1911+1347'
 filepath = './no_dmx_pickles/'
 filepath += '{0}_ng12p5yr_v3_nodmx_ePSR.pkl'.format(psrname)
 with open(filepath,'rb') as fin:
@@ -114,13 +86,19 @@ with open(filepath,'rb') as fin:
 
 
 red_psd = 'spectrum'
-dm_nondiag_kernel = 'sq_exp_rfband'#,'sq_exp', 'periodic']
+#dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']
+#dm_nondiag_kernel = ['sq_exp', 'periodic']
+dm_nondiag_kernel = 'periodic'
 dm_sw_gp = False
 dm_annual = False
-chrom_gp = True
+#chrom_gps = [True,False]
+chrom_gp = False
 chrom_gp_kernel = 'nondiag'
-chrom_kernel= 'periodic'
+#chrom_kernels = ['periodic','sq_exp']
+chrom_kernel = 'periodic'
 chrom_index = 4.
+dm_cusp = True
+cusp = 2
 white_vary = True
 
 
@@ -142,18 +120,21 @@ print(model_template)
 kwargs = copy.deepcopy(model_template)
 
 kwargs.update({'dm_var':True,
-               'dmgp_kernel':'nondiag',
-               'psd':red_psd,
-               'white_vary':white_vary,
-               'dm_nondiag_kernel':dm_nondiag_kernel,
-               'dm_sw_deter':True,
-               'dm_sw_gp':dm_sw_gp,
-               'dm_annual': dm_annual,
-               'swgp_basis': 'powerlaw',
-               'chrom_gp_kernel':chrom_gp_kernel,
-               'chrom_kernel':chrom_kernel,
-               'chrom_gp':chrom_gp,
-               'chrom_idx':chrom_index})
+              'dmgp_kernel':'nondiag',
+              'psd':red_psd,
+              'white_vary':white_vary,
+              'dm_nondiag_kernel':dm_nondiag_kernel,
+              'dm_sw_deter':True,
+              'dm_sw_gp':dm_sw_gp,
+              'dm_annual': dm_annual,
+              'swgp_basis': 'powerlaw',
+              'chrom_gp_kernel':chrom_gp_kernel,
+              'chrom_kernel':chrom_kernel,
+              'chrom_gp':chrom_gp,
+              'chrom_idx':chrom_index,
+              'dm_cusp':dm_cusp,
+              'num_dm_cusps':num_cusp,
+              'dm_cusp_sign':list(np.repeat('vary',num_cusp))})
 
 # Instantiate single pulsar noise model
 pta = model_singlepsr_noise(psr, **kwargs)
@@ -166,14 +147,15 @@ print(kwargs)
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
 
 # In[ ]:
-round_number = f'8_{red_psd}_psd_{chrom_gp_kernel}_chrom_gp_k_{chrom_kernel}_chrom_k_{chrom_gp}_chrom_gp_{dm_nondiag_kernel}_dm_nondiag_k_free_spectrum_run'
+round_number = 'free_spectrum_run_model_B_round_3_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_cusps'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
 outdir = './chains/{}/round_{}'.format(psr.name,round_number)
 print('Will Save to: ',outdir)
 #emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
-emp_distr_path = './twoD_distr_round_6_model_C.pkl'
+#emp_distr_path = f'./twoD_distr_round_6_model_C.pkl'
+emp_distr_path = f'./{psrname}_twoD_distr_round_3_model_B.pkl'
 print("Empirical Distribution?",os.path.isfile(emp_distr_path))
 sampler = sampler.setup_sampler(pta,resume=True, outdir=outdir,
                                     empirical_distr=emp_distr_path)
