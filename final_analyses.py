@@ -54,7 +54,7 @@ with open(filepath,'rb') as fin:
 
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
-model_kwargs_path = f'./chains/{psrname}/free_spectrum_run_model_B_round_5_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_positive_cusps_4_2_indx/model_kwargs.json'
+model_kwargs_path = f'./chains/{psrname}/round_free_spectrum_run_model_B_round_5_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_positive_cusps_4_2_indx/model_kwargs.json'
 
 with open(model_kwargs_path, 'r') as fin:
     model_kwargs = json.load(fin)
