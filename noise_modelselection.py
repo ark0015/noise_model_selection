@@ -192,19 +192,19 @@ for dm in dm_nondiag_kernel:
                    'num_dm_cusps':num_cusp,
                    'dm_cusp_sign':cusp_signs[:num_cusp]})
 
-      #if not chrom_gp and chrom_kernel == 'sq_exp':
-      #  pass
-      #if not add_cusp and num_cusp != 1:
-      #  pass
-      #if cusp_idx_1 == 2. and cusp_idx_2 == 4.:
-      #  pass
-      #else:
-      # Instantiate single pulsar noise model
-      ptas[ct] = model_singlepsr_noise(psr, **kwargs)
-      # Add labels and kwargs to save for posterity and plotting.
-      model_labels.append([string.ascii_uppercase[ct],dm,cusp_idxs[:num_cusp],cusp_signs[:num_cusp]])
-      model_dict.update({str(ct):kwargs})
-      ct += 1 
+    #if not chrom_gp and chrom_kernel == 'sq_exp':
+    #  pass
+    #if not add_cusp and num_cusp != 1:
+    #  pass
+    #if cusp_idx_1 == 2. and cusp_idx_2 == 4.:
+    #  pass
+    #else:
+    # Instantiate single pulsar noise model
+    ptas[ct] = model_singlepsr_noise(psr, **kwargs)
+    # Add labels and kwargs to save for posterity and plotting.
+    model_labels.append([string.ascii_uppercase[ct],dm,cusp_idxs[:num_cusp],cusp_signs[:num_cusp]])
+    model_dict.update({str(ct):kwargs})
+    ct += 1 
 
 
 
