@@ -83,7 +83,7 @@ pta = model_singlepsr_noise(psr, **fs_kwargs)
 #emp_dist_path = './wn_emp_dists/J1911+1347_ng12p5yr_v3_std_plaw_emp_dist.pkl'
 #emp_dist_path = './twoD_distr_round_6_model_C.pkl'
 #emp_dist_path = f'./{psrname}_oneD_distr_round_3_model_B.pkl'
-emp_distr_path = f'./{psrname}_oneD_distr_round_5_model_B.pkl'
+emp_dist_path = f'./{psrname}_oneD_distr_round_5_model_B.pkl'
 
 print("Empirical Distribution?",os.path.isfile(emp_dist_path))
 
