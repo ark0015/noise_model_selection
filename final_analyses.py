@@ -54,7 +54,7 @@ with open(filepath,'rb') as fin:
 
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
-model_kwargs_path = f'./chains/{psrname}/free_spectrum_run_model_B_round_3_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_cusps/model_kwargs.json'
+model_kwargs_path = f'./chains/{psrname}/free_spectrum_run_model_B_round_5_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_positive_cusps_4_2_indx/model_kwargs.json'
 
 with open(model_kwargs_path, 'r') as fin:
     model_kwargs = json.load(fin)
@@ -82,7 +82,8 @@ pta = model_singlepsr_noise(psr, **fs_kwargs)
 
 #emp_dist_path = './wn_emp_dists/J1911+1347_ng12p5yr_v3_std_plaw_emp_dist.pkl'
 #emp_dist_path = './twoD_distr_round_6_model_C.pkl'
-emp_dist_path = f'./{psrname}_twoD_distr_round_3_model_B.pkl'
+#emp_dist_path = f'./{psrname}_oneD_distr_round_3_model_B.pkl'
+emp_distr_path = f'./{psrname}_oneD_distr_round_5_model_B.pkl'
 
 print("Empirical Distribution?",os.path.isfile(emp_dist_path))
 
