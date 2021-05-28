@@ -145,7 +145,8 @@ pta_fL = model_singlepsr_noise(psr, **fLike_kwargs)
 
 sampler = setup_sampler(pta_fL, 
                         outdir=outdir,
-                        empirical_distr=emp_dist_path)
+                        empirical_distr=emp_dist_path,
+                        resume=True)
 
 
 # In[23]:
