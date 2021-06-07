@@ -22,7 +22,6 @@ top_dir = "/".join(splt_path[0 : top_path_idx + 1])
 e_e_path = top_dir + "/enterprise_extensions/"
 sys.path.insert(0, e_e_path)
 
-
 import enterprise_extensions
 from enterprise_extensions import models, model_utils, blocks
 from enterprise_extensions.models import model_singlepsr_noise
@@ -84,7 +83,6 @@ with open(filepath,'rb') as fin:
 
 # In[6]:
 
-
 red_psd = 'spectrum'
 #dm_nondiag_kernel = ['periodic','sq_exp','periodic_rfband','sq_exp_rfband']
 #dm_nondiag_kernel = ['sq_exp', 'periodic']
@@ -98,7 +96,11 @@ chrom_gp_kernel = 'nondiag'
 chrom_kernel = 'periodic'
 chrom_index = 4.
 dm_cusp = True
-cusp = 2
+cusps = 2
+#num_cusp = 2
+cusp_idxs = [4.,2.]
+cusp_signs = ['positive','positive']
+
 white_vary = True
 
 
@@ -133,8 +135,9 @@ kwargs.update({'dm_var':True,
               'chrom_gp':chrom_gp,
               'chrom_idx':chrom_index,
               'dm_cusp':dm_cusp,
-              'num_dm_cusps':num_cusp,
-              'dm_cusp_sign':list(np.repeat('vary',num_cusp))})
+              'num_dm_cusps':cusps,
+              'dm_cusp_idx':cusp_idxs,
+              'dm_cusp_sign':cusp_signs})
 
 # Instantiate single pulsar noise model
 pta = model_singlepsr_noise(psr, **kwargs)
@@ -147,7 +150,7 @@ print(kwargs)
 # ### !!! Important !!! Please set the chain directory outside of the git repository (easier) or at least do not try and commit your chains to the repo. 
 
 # In[ ]:
-round_number = 'free_spectrum_run_model_B_round_3_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_cusps'
+round_number = 'free_spectrum_run_model_B_round_5_powerlaw_psd_no_chrom_gp_periodic_dm_nondiag_k_2_positive_cusps_4_2_indx'
 writeHotChains = True
 print('Parallel Tempering?',writeHotChains)
 print(round_number)
@@ -155,7 +158,8 @@ outdir = './chains/{}/round_{}'.format(psr.name,round_number)
 print('Will Save to: ',outdir)
 #emp_distr_path = './wn_emp_dists/{0}_ng12p5yr_v3_std_plaw_emp_dist.pkl'.format(psr.name)
 #emp_distr_path = f'./twoD_distr_round_6_model_C.pkl'
-emp_distr_path = f'./{psrname}_twoD_distr_round_3_model_B.pkl'
+emp_distr_path = f'./{psrname}_oneD_distr_round_5_model_B.pkl'
+
 print("Empirical Distribution?",os.path.isfile(emp_distr_path))
 sampler = sampler.setup_sampler(pta,resume=True, outdir=outdir,
                                     empirical_distr=emp_distr_path)
